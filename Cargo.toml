@@ -1,0 +1,40 @@
+[package]
+name = "runme"
+version = "0.1.0"
+edition = "2021"
+authors = ["sigoden <sigoden@gmail.com>"]
+description = "A task management & automation tool using bash"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/sigoden/runme"
+repository = "https://github.com/sigoden/runme"
+autotests = false
+categories = ["command-line-utilities"]
+keywords = ["command-line", "task-runner", "task-automation"]
+
+[dependencies]
+argc = { git = "https://github.com/sigoden/argc" }
+anyhow = "1"
+which = "4.2"
+either = "1.8"
+
+[dependencies.clap]
+version = "4.0.0-rc.2"
+default_features = false
+features = ["std", "suggestions", "string", "help", "usage", "error-context"]
+
+
+[dev-dependencies]
+insta = "1.15"
+assert_cmd = "2"
+assert_fs = "1"
+rstest = "0.15"
+predicates = "2"
+
+[profile.release]
+lto = true
+strip = true
+opt-level = "z"
+
+[[test]]
+name = "integration"
+path = "tests/tests.rs"
