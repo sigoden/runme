@@ -195,10 +195,10 @@ fn candidate_script_names() -> Vec<String> {
             names.push(format!("{}.sh", name));
         }
     }
-    names.push("runmefile.sh".into());
     names.push("Runmefile.sh".into());
-    names.push("runmefile".into());
+    names.push("runmefile.sh".into());
     names.push("Runmefile".into());
+    names.push("runmefile".into());
     names
 }
 

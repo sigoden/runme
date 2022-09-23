@@ -14,7 +14,7 @@ fn create(tmpdir2: TempDir) -> Result<(), Error> {
         .arg("--runme-create")
         .assert()
         .success();
-    assert!(tmpdir2.path().join("runmefile.sh").exists());
+    assert!(tmpdir2.path().join("Runmefile.sh").exists());
     Command::cargo_bin("runme")?
         .current_dir(tmpdir2.path())
         .env("PATH", path_env_var)

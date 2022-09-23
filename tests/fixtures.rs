@@ -14,21 +14,14 @@ pub fn tmpdir() -> TempDir {
     let tmpdir = assert_fs::TempDir::new().expect("Couldn't create a temp dir for tests");
     tmpdir
         .child("dir1")
-        .child("runmefile.sh")
-        .write_str(&get_file("dir1-runmefile.sh"))
+        .child("Runmefile.sh")
+        .write_str(&get_file("dir1-Runmefile.sh"))
         .unwrap();
     tmpdir
         .child("dir1")
         .child("subdir1")
-        .child("runmefile.sh")
-        .write_str(&get_file("dir1-subdir1-runmefile.sh"))
-        .unwrap();
-    tmpdir
-        .child("dir1")
-        .child("subdir1")
-        .child("subsubdir1")
-        .child("EMPTY")
-        .write_str("")
+        .child("Runmefile.sh")
+        .write_str(&get_file("dir1-subdir1-Runmefile.sh"))
         .unwrap();
     tmpdir
         .child("dir1")
@@ -39,18 +32,18 @@ pub fn tmpdir() -> TempDir {
         .unwrap();
     tmpdir
         .child("dir2")
-        .child("Runmefile.sh")
-        .write_str(&get_file("dir2-Runmefile.sh"))
+        .child("runmefile.sh")
+        .write_str(&get_file("dir2-runmefile.sh"))
         .unwrap();
     tmpdir
         .child("dir3")
-        .child("runmefile")
-        .write_str(&get_file("dir3-runmefile"))
+        .child("Runmefile")
+        .write_str(&get_file("dir3-Runmefile"))
         .unwrap();
     tmpdir
         .child("dir4")
-        .child("Runmefile")
-        .write_str(&get_file("dir4-Runmefile"))
+        .child("runmefile")
+        .write_str(&get_file("dir4-runmefile"))
         .unwrap();
     tmpdir
 }

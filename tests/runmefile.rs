@@ -12,14 +12,14 @@ fn runmefile(tmpdir: TempDir) -> Result<(), Error> {
         .current_dir(tmpdir.child("dir1").path())
         .env("PATH", path_env_var.clone())
         .assert()
-        .stdout(predicates::str::contains("dir1-runmefile.sh"))
+        .stdout(predicates::str::contains("dir1-Runmefile.sh"))
         .success();
 
     Command::cargo_bin("runme")?
         .current_dir(tmpdir.child("dir1").child("subdir1").path())
         .env("PATH", path_env_var.clone())
         .assert()
-        .stdout(predicates::str::contains("dir1-subdir1-runmefile.sh"))
+        .stdout(predicates::str::contains("dir1-subdir1-Runmefile.sh"))
         .success();
 
     Command::cargo_bin("runme")?
@@ -32,28 +32,28 @@ fn runmefile(tmpdir: TempDir) -> Result<(), Error> {
         )
         .env("PATH", path_env_var.clone())
         .assert()
-        .stdout(predicates::str::contains("dir1-subdir1-runmefile.sh"))
+        .stdout(predicates::str::contains("dir1-subdir1-Runmefile.sh"))
         .success();
 
     Command::cargo_bin("runme")?
         .current_dir(tmpdir.child("dir2").path())
         .env("PATH", path_env_var.clone())
         .assert()
-        .stdout(predicates::str::contains("dir2-Runmefile.sh"))
+        .stdout(predicates::str::contains("dir2-runmefile.sh"))
         .success();
 
     Command::cargo_bin("runme")?
         .current_dir(tmpdir.child("dir3").path())
         .env("PATH", path_env_var.clone())
         .assert()
-        .stdout(predicates::str::contains("dir3-runmefile"))
+        .stdout(predicates::str::contains("dir3-Runmefile"))
         .success();
 
     Command::cargo_bin("runme")?
         .current_dir(tmpdir.child("dir4").path())
         .env("PATH", path_env_var)
         .assert()
-        .stdout(predicates::str::contains("dir4-Runmefile"))
+        .stdout(predicates::str::contains("dir4-runmefile"))
         .success();
 
     Ok(())
@@ -68,7 +68,7 @@ fn runmefile_path(tmpdir: TempDir) -> Result<(), Error> {
         .stdout(predicates::str::contains(
             tmpdir
                 .child("dir1")
-                .join("runmefile.sh")
+                .join("Runmefile.sh")
                 .display()
                 .to_string(),
         ))
