@@ -19,8 +19,9 @@ checksum = "98161a4e3e2184da77bb14f02184cdd111e83bbbcc9979dfee3c44b9a85f5602"
 
 [[package]]
 name = "argc"
-version = "0.10.1"
-source = "git+https://github.com/sigoden/argc#501ae80f2f527701874cbd92a70892ad94173117"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a49c752f5d793c9ad150e52b79a99897ca4a89a45dc56b070d9c88dbfdfcb035"
 dependencies = [
  "anyhow",
  "clap",

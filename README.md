@@ -3,15 +3,14 @@
 [![CI](https://github.com/sigoden/runme/actions/workflows/ci.yaml/badge.svg)](https://github.com/sigoden/runme/actions/workflows/ci.yaml)
 [![Crates](https://img.shields.io/crates/v/runme.svg)](https://crates.io/crates/runme)
 
-A task management & automation tool using bash.
+A task runner using bash.
 
 - [runme](#runme)
   - [Install](#install)
     - [With cargo](#with-cargo)
     - [Binaries on macOS, Linux, Windows](#binaries-on-macos-linux-windows)
     - [GitHub Actions](#github-actions)
-  - [CLI](#cli)
-  - [Usage](#usage)
+  - [Why use runme?](#why-use-runme)
     - [Linux, MacOS, and Windows are supported](#linux-macos-and-windows-are-supported)
     - [Task is just function](#task-is-just-function)
     - [Task accepts flags, options and positional arguments](#task-accepts-flags-options-and-positional-arguments)
@@ -20,9 +19,10 @@ A task management & automation tool using bash.
     - [Task can be semantically grouped](#task-can-be-semantically-grouped)
     - [The default task](#the-default-task)
     - [Informative tasks listings and beautiful help printings](#informative-tasks-listings-and-beautiful-help-printings)
-    - [Customize shell](#customize-shell)
+  - [Advanced Topics](#advanced-topics)
+    - [Completions](#completions)
+    - [Customize shell path](#customize-shell-path)
     - [Customize script name](#customize-script-name)
-  - [Completions](#completions)
   - [License](#license)
 
 ## Install
@@ -48,63 +48,20 @@ Download from [Github Releases](https://github.com/sigoden/runme/releases), unzi
     name: runme
 ```
 
-## CLI
+## Why use runme?
 
-```
-A task management & automation tool using bash - https://github.com/sigoden/runme
+In one word: automation. The less work you have to do when performing repetitive tasks like building, unit testing, linting, testing, etc, the easier your job becomes. After you've configured it through a `Runmefile.sh`, a task runner can do most of that mundane work for you—and your team—with basically zero effort.
 
-USAGE:
-    runme --runme-eval SCRIPT [ARGS...]        Parse arguments `eval $(runme --runme-eval "$0" "$@")`
-    runme --runme-create [TASKS...]            Create a boilerplate runmefile
-    runme --runme-help                         Print help information
-    runme --runme-version                      Print version information
-```
-
-All runme options are prefixed with `--runme` in order to distinguish with script options.
-
-`runme --help` display script help information, `runme --runme-help` display runme cli help information.
-
-`runme --runme-create foo bar` will generate boilerplate `runmefile.sh` as show bellow.
-
-```
-#!/usr/bin/env bash
-
-set -e
-
-# @cmd
-foo() {
-    echo Run foo
-}
-
-# @cmd
-bar() {
-    echo Run bar
-}
-
-eval $(runme --runme-eval "$0" "$@")
-```
-
-## Usage
-
-![task automation](https://user-images.githubusercontent.com/4012553/183369248-a898021b-bf5b-414b-b353-786522d85f13.png)
-
-Using runme script for task automation has the following disadvantages:
-
-- Not work in some shell such as powershell.
-- No shell completions.
-- Need to locate script file manually e.g. `../../script.sh`
-
-`runme` will automatically search for the `runmefile.sh` file in the current project or its parent directory, then run it with `bash`.
-
-`runme` runs `runmefile.sh` like `make` runs `makefile`.
+`runme` runs `Runmefile.sh` like `make` runs `Makefile`.
 
 ### Linux, MacOS, and Windows are supported
 
 `runme` binaries are available in linux, macos, and windows.
 
-`runme` require `bash` which already builtin in macos/linux. In windows, most developers already have git installed, `runme` automatically locate and use git bash.
+`runme` depends on bash. Linux/macos has built-in bash. If git is installed on windows, runme will automatically find and use git bash
 
 GNU tools like `ls`, `rm`, `grep`, `find`, `sed`, `awk`... are also available, use them freely and confidently.
+
 
 ### Task is just function
 
@@ -121,29 +78,7 @@ test() {
   echo Test...
 }
 
-helper() {
-  :;
-}
-
 eval $(runme --runme-eval "$0" "$@")
-```
-
-```
-$ runme
-runmefile.sh 
-
-USAGE:
-    runmefile.sh <SUBCOMMAND>
-
-OPTIONS:
-    -h, --help    Print help information
-
-SUBCOMMANDS:
-    build    Build project
-    test     Run tests 
-
-$ runme build
-Build...
 ```
 
 ### Task accepts flags, options and positional arguments
@@ -154,19 +89,18 @@ Build...
 # @option  --opt          A option
 # @arg     arg            A positional argument
 cmd() {
-  echo "flag: $runme_flag"
-  echo "opt:  $runme_opt"
-  echo "arg:  $runme_arg"
+  echo "flag: $argc_flag"
+  echo "opt:  $argc_opt"
+  echo "arg:  $argc_arg"
 }
 ```
 
 ```
 $ runme cmd -h
-runmefile.sh
 A simple task
 
 USAGE:
-    runmefile.sh cmd [OPTIONS] [ARG]
+    Runmefile.sh cmd [OPTIONS] [ARG]
 
 ARGS:
     <ARG>    A positional argument
@@ -189,13 +123,19 @@ arg:  README.md
 ```sh
 # @cmd
 build() {
-  echo $2 $1
+  echo '$@:' $@
+  echo '$1:' $1
+  echo '$2:' $2
+  echo '$#:' $#
 }
 ```
 
 ```
 $ runme build foo bar
-bar foo
+$@: foo bar
+$1: foo
+$2: bar
+$#: 2
 ```
 
 ### Task can have aliases
@@ -215,7 +155,7 @@ Test...
 
 ### Task can have pre and post dependencies
 
-Tasks can depend on other tasks. Dependencies are resolved by calling functions.
+Tasks can depend on other tasks. Dependencies are established by calling functions.
 
 ```sh
 # @cmd
@@ -288,14 +228,17 @@ See snippets above, `runme` prints a beautiful help message listing all tasks al
 
 You can also use `runme <task> -h` to print a help message containing the description of task flags, options and positional arguments.
 
-### Customize shell
+## Advanced Topics
 
-runme uses built-in bash in macos/linux, uses git bash in windows.
+### Completions
 
-You can use environment variable `RUNME_SHELL` to customize shell.
+[Shell completion scripts](completions) are available for bash/zsh/powershell.
+
+### Customize shell path
+
+You can use environment variable `RUNME_SHELL` to customize shell path.
 
 ```
-RUNME_SHELL=/usr/bin/bash
 RUNME_SHELL="C:\\Program Files\\Git\\bin\\bash.exe"
 ```
 
@@ -303,27 +246,16 @@ RUNME_SHELL="C:\\Program Files\\Git\\bin\\bash.exe"
 
 By default, runme searches for runme script file of the following:
 
-- runmefile.sh
 - Runmefile.sh
-- runmefile
+- runmefile.sh
 - Runmefile
+- runmefile
 
 You can use environment variable `RUNME_SCRIPT` to custom script name.
 
 ```
 RUNME_SCRIPT=taskfile.sh
 ```
-
-## Completions
-
-[Shell completion scripts](completions) are available for bash/zsh/powershell.
-
-There are two types of completion scripts:
-
--  `runme.*` is for runme command, they will provide completions for tasks and task parameters.
--  `script.*` is for scripts written with runme.
-
-Please refer to your shell's documentation for how to install them.
 
 ## License
 
