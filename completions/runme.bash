@@ -1,6 +1,6 @@
 # Bash completion for runme
 
-_runme() {
+_runme_completion() {
     local runmefile cur opts
     cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=()
@@ -13,4 +13,4 @@ _runme() {
     return 0
 }
 
-complete -F _runme -o bashdefault -o default runme
+complete -F _runme_completion -o bashdefault -o default runme

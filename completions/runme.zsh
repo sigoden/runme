@@ -1,6 +1,6 @@
 # Zsh completion for runme
 
-_runme()
+_runme_completion()
 {
     local runmefile values
     runmefile=$(runme --runme-file 2>/dev/null)
@@ -12,4 +12,4 @@ _runme()
     return 0
 }
 
-compdef _runme runme
+compdef _runme_completion runme
