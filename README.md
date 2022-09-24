@@ -61,7 +61,7 @@ The less work you have to do when performing repetitive tasks like building, tes
 
 `runme` binaries are available in linux, macos, and windows.
 
-`runme` depends on bash. Linux/macos has built-in bash. If git is installed on windows, runme will automatically find and use git bash
+`runme` depends on bash. Linux/macos has built-in bash. If git is installed on windows, runme will automatically find and use git bash.
 
 GNU tools like `ls`, `rm`, `grep`, `find`, `sed`, `awk`... are also available, use them freely and confidently.
 
@@ -247,7 +247,6 @@ A task management & automation tool using bash - https://github.com/sigoden/runm
 USAGE:
     runme --runme-eval SCRIPT [ARGS...]        Parse arguments `eval $(runme --runme-eval "$0" "$@")`
     runme --runme-create [TASKS...]            Create a boilerplate runmefile
-    runme --runme-file                         Print runmefile path
     runme --runme-help                         Print help information
     runme --runme-version                      Print version information
 ```
