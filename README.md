@@ -20,6 +20,7 @@ A task runner using bash.
     - [The default task](#the-default-task)
     - [Informative tasks listings and beautiful help printings](#informative-tasks-listings-and-beautiful-help-printings)
   - [Advanced Topics](#advanced-topics)
+    - [CLI Usage](#cli-usage)
     - [Completions](#completions)
     - [Customize shell path](#customize-shell-path)
     - [Customize script name](#customize-script-name)
@@ -50,9 +51,9 @@ Download from [Github Releases](https://github.com/sigoden/runme/releases), unzi
 
 ## Why use runme?
 
-In one word: automation. The less work you have to do when performing repetitive tasks like building, unit testing, linting, testing, etc, the easier your job becomes. After you've configured it through a `Runmefile.sh`, a task runner can do most of that mundane work for you—and your team—with basically zero effort.
+`runme` provides a cross platform way to define and execute custom commands specific to a codebase.
 
-`runme` runs `Runmefile.sh` like `make` runs `Makefile`.
+The less work you have to do when performing repetitive tasks like building, testing, running, etc, the easier your job becomes. After you've configured it through a `Runmefile.sh`, a task runner can do most of that mundane work for you—and your team—with basically zero effort.
 
 ### Linux, MacOS, and Windows are supported
 
@@ -230,6 +231,23 @@ You can also use `runme <task> -h` to print a help message containing the descri
 
 ## Advanced Topics
 
+### CLI Usage
+
+In order to distinguish with task script's flags and options, all runme cli options are prefixed with `--runme` 
+
+`runme --help` display task script's help information, `runme --runme-help` display runme cli's help information.
+
+```
+A task management & automation tool using bash - https://github.com/sigoden/runme
+
+USAGE:
+    runme --runme-eval SCRIPT [ARGS...]        Parse arguments `eval $(runme --runme-eval "$0" "$@")`
+    runme --runme-create [TASKS...]            Create a boilerplate runmefile
+    runme --runme-file                         Print runmefile path
+    runme --runme-help                         Print help information
+    runme --runme-version                      Print version information
+```
+
 ### Completions
 
 [Shell completion scripts](completions) are available for bash/zsh/powershell.
@@ -248,15 +266,16 @@ By default, runme searches for runme script file of the following:
 
 - Runmefile.sh
 - runmefile.sh
+- RUNMEFILE.sh
 - Runmefile
 - runmefile
+- RUNMEFILE
 
 You can use environment variable `RUNME_SCRIPT` to custom script name.
 
 ```
 RUNME_SCRIPT=taskfile.sh
 ```
-
 ## License
 
 Copyright (c) 2022 runme-developers.

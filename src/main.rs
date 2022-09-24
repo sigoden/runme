@@ -8,6 +8,15 @@ use std::{
 };
 use which::which;
 
+const SCRIPT_NAMES: [&str; 6] = [
+    "Runmefile.sh",
+    "runmefile.sh",
+    "RUNMEFILE.sh",
+    "Runmefile",
+    "runmefile",
+    "RUNMEFILE",
+];
+
 fn main() {
     match run() {
         Ok(code) => {
@@ -46,6 +55,7 @@ fn run() -> Result<i32> {
             r#"
     runme --runme-eval SCRIPT [ARGS...]        Parse arguments `eval $(runme --runme-eval "$0" "$@")`
     runme --runme-create [TASKS...]            Create a boilerplate runmefile
+    runme --runme-file                         Print runmefile path
     runme --runme-help                         Print help information
     runme --runme-version                      Print version information"#,
         )
@@ -113,7 +123,7 @@ USAGE:{usage}"#)
     } else {
         let shell = get_shell_path().ok_or_else(|| anyhow!("Not found shell"))?;
         let (script_dir, script_file) = get_script_path(true).ok_or_else(|| {
-            anyhow!("Not found script file, For more information try `runme --runme-help`")
+            anyhow!("Not found script file, try `runme --runme-help` to get help.")
         })?;
         let mut command = process::Command::new(&shell);
         command.arg(&script_file);
@@ -195,10 +205,7 @@ fn candidate_script_names() -> Vec<String> {
             names.push(format!("{}.sh", name));
         }
     }
-    names.push("Runmefile.sh".into());
-    names.push("runmefile.sh".into());
-    names.push("Runmefile".into());
-    names.push("runmefile".into());
+    names.extend(SCRIPT_NAMES.into_iter().map(|v| v.to_string()));
     names
 }
 

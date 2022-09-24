@@ -1,10 +1,21 @@
 use assert_cmd::cargo::cargo_bin;
-use assert_fs::fixture::TempDir;
+use assert_fs::fixture::{ChildPath, TempDir};
 use assert_fs::prelude::*;
 use rstest::fixture;
 
 #[allow(dead_code)]
 pub type Error = Box<dyn std::error::Error>;
+
+pub const SCRIPT_PATHS: [&str; 8] = [
+    "dir1/Runmefile.sh",
+    "dir1/subdir1/Runmefile.sh",
+    "dir1/subdir1/subdirdir1/EMPTY",
+    "dir2/runmefile.sh",
+    "dir3/RUNMEFILE.sh",
+    "dir4/Runmefile",
+    "dir5/runmefile",
+    "dir6/RUNMEFILE",
+];
 
 /// Test fixture which creates a temporary directory with a few files and directories inside.
 /// The directories also contain files.
@@ -12,39 +23,9 @@ pub type Error = Box<dyn std::error::Error>;
 #[allow(dead_code)]
 pub fn tmpdir() -> TempDir {
     let tmpdir = assert_fs::TempDir::new().expect("Couldn't create a temp dir for tests");
-    tmpdir
-        .child("dir1")
-        .child("Runmefile.sh")
-        .write_str(&get_file("dir1-Runmefile.sh"))
-        .unwrap();
-    tmpdir
-        .child("dir1")
-        .child("subdir1")
-        .child("Runmefile.sh")
-        .write_str(&get_file("dir1-subdir1-Runmefile.sh"))
-        .unwrap();
-    tmpdir
-        .child("dir1")
-        .child("subdir1")
-        .child("subsubdir1")
-        .child("EMPTY")
-        .write_str("")
-        .unwrap();
-    tmpdir
-        .child("dir2")
-        .child("runmefile.sh")
-        .write_str(&get_file("dir2-runmefile.sh"))
-        .unwrap();
-    tmpdir
-        .child("dir3")
-        .child("Runmefile")
-        .write_str(&get_file("dir3-Runmefile"))
-        .unwrap();
-    tmpdir
-        .child("dir4")
-        .child("runmefile")
-        .write_str(&get_file("dir4-runmefile"))
-        .unwrap();
+    for path in SCRIPT_PATHS {
+        write_file(&tmpdir, path);
+    }
     tmpdir
 }
 
@@ -65,7 +46,22 @@ pub fn get_path_env_var() -> String {
     }
 }
 
-fn get_file(name: &str) -> String {
+pub fn tmpdir_path(tmpdir: &TempDir, path: &str) -> ChildPath {
+    let parts: Vec<&str> = path.split('/').collect();
+    let cp = tmpdir.child(parts[0]);
+    parts.iter().skip(1).fold(cp, |acc, part| acc.child(part))
+}
+
+fn write_file(tmpdir: &TempDir, path: &str) {
+    let cp = tmpdir_path(tmpdir, path);
+    if path.ends_with("EMPTY") {
+        cp.write_str("").unwrap();
+    } else {
+        cp.write_str(&get_script(path)).unwrap();
+    }
+}
+
+fn get_script(name: &str) -> String {
     format!(
         r#"
 set -euo pipefail

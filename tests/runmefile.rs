@@ -1,59 +1,31 @@
 use assert_fs::{fixture::PathChild, TempDir};
 use rstest::rstest;
 
-use crate::fixtures::{get_path_env_var, tmpdir, Error};
+use crate::fixtures::{get_path_env_var, tmpdir, tmpdir_path, Error, SCRIPT_PATHS};
 use assert_cmd::prelude::*;
 use std::process::Command;
 
 #[rstest]
 fn runmefile(tmpdir: TempDir) -> Result<(), Error> {
     let path_env_var = get_path_env_var();
-    Command::cargo_bin("runme")?
-        .current_dir(tmpdir.child("dir1").path())
-        .env("PATH", path_env_var.clone())
-        .assert()
-        .stdout(predicates::str::contains("dir1-Runmefile.sh"))
-        .success();
+
+    for path in SCRIPT_PATHS {
+        if path.ends_with("EMPTY") {
+            continue;
+        }
+        Command::cargo_bin("runme")?
+            .current_dir(tmpdir_path(&tmpdir, path).path().parent().unwrap())
+            .env("PATH", path_env_var.clone())
+            .assert()
+            .stdout(predicates::str::contains(path))
+            .success();
+    }
 
     Command::cargo_bin("runme")?
-        .current_dir(tmpdir.child("dir1").child("subdir1").path())
-        .env("PATH", path_env_var.clone())
-        .assert()
-        .stdout(predicates::str::contains("dir1-subdir1-Runmefile.sh"))
-        .success();
-
-    Command::cargo_bin("runme")?
-        .current_dir(
-            tmpdir
-                .child("dir1")
-                .child("subdir1")
-                .child("subsubdir1")
-                .path(),
-        )
-        .env("PATH", path_env_var.clone())
-        .assert()
-        .stdout(predicates::str::contains("dir1-subdir1-Runmefile.sh"))
-        .success();
-
-    Command::cargo_bin("runme")?
-        .current_dir(tmpdir.child("dir2").path())
-        .env("PATH", path_env_var.clone())
-        .assert()
-        .stdout(predicates::str::contains("dir2-runmefile.sh"))
-        .success();
-
-    Command::cargo_bin("runme")?
-        .current_dir(tmpdir.child("dir3").path())
-        .env("PATH", path_env_var.clone())
-        .assert()
-        .stdout(predicates::str::contains("dir3-Runmefile"))
-        .success();
-
-    Command::cargo_bin("runme")?
-        .current_dir(tmpdir.child("dir4").path())
+        .current_dir(tmpdir_path(&tmpdir, "dir1/subdir1/subdirdir1"))
         .env("PATH", path_env_var)
         .assert()
-        .stdout(predicates::str::contains("dir4-runmefile"))
+        .stdout(predicates::str::contains("dir1/subdir1/Runmefile.sh"))
         .success();
 
     Ok(())
@@ -66,9 +38,7 @@ fn runmefile_path(tmpdir: TempDir) -> Result<(), Error> {
         .current_dir(tmpdir.child("dir1").path())
         .assert()
         .stdout(predicates::str::contains(
-            tmpdir
-                .child("dir1")
-                .join("Runmefile.sh")
+            tmpdir_path(&tmpdir, "dir1/Runmefile.sh")
                 .display()
                 .to_string(),
         ))
