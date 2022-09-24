@@ -5,6 +5,8 @@
 
 A task runner using bash.
 
+![demo](https://user-images.githubusercontent.com/4012553/192087589-241125ed-73b3-40e9-b753-9d6a5fc806ac.png)
+
 - [runme](#runme)
   - [Install](#install)
     - [With cargo](#with-cargo)
@@ -31,7 +33,7 @@ A task runner using bash.
 ### With cargo
 
 ```
-cargo install runme
+cargo install --force runme
 ```
 
 ### Binaries on macOS, Linux, Windows
@@ -71,16 +73,18 @@ Adds a task by putting `@cmd` above a function.
 ```sh
 # @cmd Build project
 build() {
-  echo Build...
+  echo Run build
 }
 
 # @cmd Run tests
 test() {
-  echo Test...
+  echo Run test
 }
 
 eval $(runme --runme-eval "$0" "$@")
 ```
+
+> Run `runme --runme-crate build test` to quickly create a boilerplate Runmefile.sh.
 
 ### Task accepts flags, options and positional arguments
 
