@@ -10,10 +10,10 @@ use which::which;
 
 const SCRIPT_NAMES: [&str; 6] = [
     "Runmefile.sh",
-    "runmefile.sh",
-    "RUNMEFILE.sh",
     "Runmefile",
+    "runmefile.sh",
     "runmefile",
+    "RUNMEFILE.sh",
     "RUNMEFILE",
 ];
 

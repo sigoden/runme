@@ -267,12 +267,9 @@ RUNME_SHELL="C:\\Program Files\\Git\\bin\\bash.exe"
 
 By default, runme searches for runme script file of the following:
 
-- Runmefile.sh
-- runmefile.sh
-- RUNMEFILE.sh
-- Runmefile
-- runmefile
-- RUNMEFILE
+- Runmefile.sh or Runmefile
+- runmefile.sh or runmefile
+- RUNMEFILE.sh or RUNMEFILE
 
 You can use environment variable `RUNME_SCRIPT` to custom script name.
 
