@@ -3,7 +3,7 @@
 [![CI](https://github.com/sigoden/runme/actions/workflows/ci.yaml/badge.svg)](https://github.com/sigoden/runme/actions/workflows/ci.yaml)
 [![Crates](https://img.shields.io/crates/v/runme.svg)](https://crates.io/crates/runme)
 
-A task runner using bash.
+A bash-based task runner.
 
 ![demo](https://user-images.githubusercontent.com/4012553/192125896-729e0b31-7be9-4385-8b37-c36bf7d4376b.png)
 
