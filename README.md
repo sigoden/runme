@@ -5,7 +5,7 @@
 
 A cli task runner.
 
-![demo](https://user-images.githubusercontent.com/4012553/193002743-1b3adc69-d00f-46af-9f64-b80f8648d690.gif)
+![demo](https://user-images.githubusercontent.com/4012553/193005194-7eac4e5e-ec35-484f-94da-45805136c943.gif)
 
 - [runme](#runme)
   - [Install](#install)
