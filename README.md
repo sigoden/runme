@@ -3,9 +3,9 @@
 [![CI](https://github.com/sigoden/runme/actions/workflows/ci.yaml/badge.svg)](https://github.com/sigoden/runme/actions/workflows/ci.yaml)
 [![Crates](https://img.shields.io/crates/v/runme.svg)](https://crates.io/crates/runme)
 
-A bash-based task runner.
+A cli task runner.
 
-![demo](https://user-images.githubusercontent.com/4012553/192125896-729e0b31-7be9-4385-8b37-c36bf7d4376b.png)
+![demo](https://user-images.githubusercontent.com/4012553/193002743-1b3adc69-d00f-46af-9f64-b80f8648d690.gif)
 
 - [runme](#runme)
   - [Install](#install)
@@ -63,12 +63,12 @@ set -e
 # @cmd build project
 # @alias b
 build() {
-    echo "Build the project"
+    echo Run build
 }
 
 # @cmd test project
 test() {
-    echo "Test the project"
+    echo Run test
 }
 
 eval $(runme --runme-eval "$0" "$@")
@@ -107,8 +107,8 @@ To define a new task `foo`, simply create the `foo` function and add the `@cmd` 
 
 ```sh
 # @cmd
-foo() {
-  echo A task entry
+task1() {
+  echo Run task1
 }
 ```
 
@@ -119,7 +119,7 @@ foo() {
 # @flag    -f --flag      A flag
 # @option  --opt          A option
 # @arg     arg            A positional argument
-cmd() {
+task2() {
   echo "flag: $argc_flag"
   echo "opt:  $argc_opt"
   echo "arg:  $argc_arg"
@@ -141,10 +141,10 @@ OPTIONS:
     -h, --help         Print help information
         --opt <OPT>    A option
 
-$ runme cmd -f --opt foo README.md
+$ runme cmd -f --opt=v1 v2
 flag: 1
-opt:  foo
-arg:  README.md
+opt:  v1
+arg:  v2
 ```
 
 *Shell variables are also available.*

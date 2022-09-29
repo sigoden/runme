@@ -3,7 +3,7 @@ name = "runme"
 version = "0.1.0"
 edition = "2021"
 authors = ["sigoden <sigoden@gmail.com>"]
-description = "A bash-based task runner"
+description = "A cli task runner"
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/sigoden/runme"
 repository = "https://github.com/sigoden/runme"
@@ -12,15 +12,11 @@ categories = ["command-line-utilities"]
 keywords = ["command-line", "task-runner", "task-automation", "build-tool"]
 
 [dependencies]
-argc = { git = "https://github.com/sigoden/argc.git" }
+argc = "0.12"
 anyhow = "1"
 which = "4.2"
 either = "1.8"
-
-[dependencies.clap]
-version = "4.0.0-rc.2"
-default_features = false
-features = ["std", "suggestions", "string", "help", "usage", "error-context"]
+clap = { version = "4.0", features = ["string"]}
 
 
 [dev-dependencies]
