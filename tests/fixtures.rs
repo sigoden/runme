@@ -63,14 +63,18 @@ fn write_file(tmpdir: &TempDir, path: &str) {
 
 fn get_script(name: &str) -> String {
     format!(
-        r#"
+        r#"#!/usr/bin/env bash
 set -euo pipefail
 
 main() {{
   echo "{name}"
 }}
 
-echo $PATH
+# @cmd
+task1() {{
+    sleep $1
+}}
+
 eval $(runme --runme-eval "$0" "$@")
 "#
     )
