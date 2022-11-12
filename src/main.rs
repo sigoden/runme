@@ -147,11 +147,10 @@ USAGE:{usage}"#)
         let status = command
             .status()
             .map_err(|err| anyhow!("Run `{}` throw {}", script_file.display(), err))?;
-        let mut code = status.code().unwrap_or_default();
-        if code == 0 && interrupt.load(Ordering::Relaxed) {
-            code = 130;
+        if interrupt.load(Ordering::Relaxed) {
+            return Ok(130);
         }
-        return Ok(code);
+        return Ok(status.code().unwrap_or_default());
     }
     Ok(0)
 }

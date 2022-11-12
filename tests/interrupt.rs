@@ -18,7 +18,7 @@ fn interrupt(tmpdir: TempDir) -> Result<(), Error> {
     let mut child = Command::cargo_bin("runme")?
         .current_dir(tmpdir.child("dir1").path())
         .env("PATH", path_env_var)
-        .args(["sleep", "2"])
+        .args(["task1", "2"])
         .spawn()
         .expect("runme invocation failed");
 

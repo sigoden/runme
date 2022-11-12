@@ -71,7 +71,7 @@ main() {{
 }}
 
 # @cmd
-sleep() {{
+task1() {{
     sleep $1
 }}
 
