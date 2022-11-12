@@ -7,4 +7,6 @@ mod macros;
 mod cli;
 mod compgen;
 mod create;
+#[cfg(unix)]
+mod interrupt;
 mod runmefile;

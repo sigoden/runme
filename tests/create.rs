@@ -30,7 +30,7 @@ fn create_with_tasks(tmpdir2: TempDir) -> Result<(), Error> {
         .current_dir(tmpdir2.path())
         .env("PATH", path_env_var.clone())
         .arg("--runme-create")
-        .args(&["foo", "bar"])
+        .args(["foo", "bar"])
         .assert()
         .success();
     Command::cargo_bin("runme")?

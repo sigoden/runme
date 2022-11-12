@@ -5,6 +5,10 @@ use std::{
     env, fs,
     path::{Path, PathBuf},
     process,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
 };
 use which::which;
 
@@ -132,6 +136,10 @@ USAGE:{usage}"#)
         let (script_dir, script_file) = get_script_path(true).ok_or_else(|| {
             anyhow!("Not found script file, try `runme --runme-help` to get help.")
         })?;
+        let interrupt = Arc::new(AtomicBool::new(false));
+        let interrupt_me = interrupt.clone();
+        ctrlc::set_handler(move || interrupt_me.store(true, Ordering::Relaxed))
+            .map_err(|err| anyhow!("Failed to set CTRL-C handler: {}", err))?;
         let mut command = process::Command::new(&shell);
         command.arg(&script_file);
         command.args(&script_args);
@@ -139,7 +147,11 @@ USAGE:{usage}"#)
         let status = command
             .status()
             .map_err(|err| anyhow!("Run `{}` throw {}", script_file.display(), err))?;
-        return Ok(status.code().unwrap_or_default());
+        let mut code = status.code().unwrap_or_default();
+        if code == 0 && interrupt.load(Ordering::Relaxed) {
+            code = 130;
+        }
+        return Ok(code);
     }
     Ok(0)
 }
