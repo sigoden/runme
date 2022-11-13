@@ -3,7 +3,7 @@
 [![CI](https://github.com/sigoden/runme/actions/workflows/ci.yaml/badge.svg)](https://github.com/sigoden/runme/actions/workflows/ci.yaml)
 [![Crates](https://img.shields.io/crates/v/runme.svg)](https://crates.io/crates/runme)
 
-A cli task runner.
+A shell-script driven task runner.
 
 ![demo](https://user-images.githubusercontent.com/4012553/193005194-7eac4e5e-ec35-484f-94da-45805136c943.gif)
 
@@ -14,14 +14,13 @@ A cli task runner.
     - [GitHub Actions](#github-actions)
   - [Get Started](#get-started)
   - [Why use runme?](#why-use-runme)
-    - [Cross-platform support for Windows / macOS and Linux](#cross-platform-support-for-windows--macos-and-linux)
-    - [Task is just function](#task-is-just-function)
-    - [Task accepts flags, options and positional arguments](#task-accepts-flags-options-and-positional-arguments)
-    - [Task can have aliases](#task-can-have-aliases)
-    - [Task can have pre and post dependencies](#task-can-have-pre-and-post-dependencies)
-    - [Task can be semantically grouped](#task-can-be-semantically-grouped)
-    - [The default task](#the-default-task)
-    - [Informative tasks listings and beautiful help printings](#informative-tasks-listings-and-beautiful-help-printings)
+    - [Cross-platform](#cross-platform)
+    - [Tasks listing](#tasks-listing)
+    - [Task parameters](#task-parameters)
+    - [Task aliases](#task-aliases)
+    - [Task dependencies](#task-dependencies)
+    - [Task group](#task-group)
+    - [Default task](#default-task)
   - [Advanced Topics](#advanced-topics)
     - [Completions](#completions)
     - [Customize shell path](#customize-shell-path)
@@ -53,7 +52,7 @@ Download from [Github Releases](https://github.com/sigoden/runme/releases), unzi
 
 ## Get Started
 
-First, define a simple `Runmefile.sh` in your project.
+First, run `runme --runme-create build test` to quickly create boilerplate `Runmefile.sh`
 
 ```sh
 #!/usr/bin/env bash
@@ -74,14 +73,15 @@ test() {
 eval $(runme --runme-eval "$0" "$@")
 ```
 
+> To define a new task, simply create the bash function and add the [`@cmd`](https://github.com/sigoden/argc#cmd) above it.  **Task is just function**
+
+
 Then, try running one of your commands!
 
 ```
 runme build
 runme test
 ```
-
-You can also run `runme --runme-create build test` to quickly create boilerplate Runmefile.sh.
 
 > Runme uses [`argc`](https://github.com/sigoden/argc) to parse Runmefile.
 
@@ -93,81 +93,87 @@ You can also run `runme --runme-create build test` to quickly create boilerplate
 
 The less work you have to do when performing repetitive tasks like building, testing, linting, etc, the easier your job becomes. After you've configured it through a `Runmefile.sh`, a task runner can do most of that mundane work for you—and your team—with basically zero effort.
 
-### Cross-platform support for Windows / macOS and Linux
+### Cross-platform
 
 `runme` binary is available in linux, macos, and windows.
 
-`runme` depends on bash. Linux/macos has built-in bash. In windows, git is frequently used, runme automatically locates and uses bash that comes with git.
+`runme` depends on bash which already built into linux/macos. In windows, runme automatically locates and uses bash that comes with **git** by default.
 
-Environments that support bash usually also support GNU tools, so you can use `ls`, `rm`, `grep`, `sed`, `awk`... in Runmefile freely and confidently.
+Gnu tools like `ls`, `rm`, `grep`, `sed`, `awk`... also provided with bash, so you can uses them freely and confidently in the Runmefile.
 
-### Task is just function
+### Tasks listing
 
-To define a new task `foo`, simply create the `foo` function and add the `@cmd` comment tag above it.
+Tasks can be listed with `runme --help` or `runme -h`.
+
+```
+$ runme --help
+USAGE: Runmefile.sh <COMMAND>
+
+COMMANDS:
+  build  build project [aliases: b]
+  test   test project
+```
+
+`runme <task> --help` or `runme <task> -h` will print a help text containing the description of task's flags, options and positional arguments.
+
+### Task parameters
+
+Parameters can be accessed using shell variables
 
 ```sh
 # @cmd
-task1() {
-  echo Run task1
+run() {
+  echo $2 $1 $#
 }
 ```
+```
+$ runme run foo bar
+bar foo 2
+```
 
-### Task accepts flags, options and positional arguments
+A more powerful way to define parameters is to use [`@arg`](https://github.com/sigoden/argc#arg), [`@option`](https://github.com/sigoden/argc#option) and [`@flag`](https://github.com/sigoden/argc#flag).
 
 ```sh
-# @cmd     A simple task
-# @flag    -f --flag      A flag
-# @option  --opt          A option
-# @arg     arg            A positional argument
-task2() {
-  echo "flag: $argc_flag"
-  echo "opt:  $argc_opt"
-  echo "arg:  $argc_arg"
+# @cmd Download a file
+# @alias    d
+# @flag     -f --force              Override existing file
+# @option   -t --tries <NUM>        Set number of retries to NUM
+# @arg      source!                 Url to download from
+# @arg      target                  Save file to
+download() {
+    echo "cmd:                      download"
+    echo "flag:   --force           $argc_force"
+    echo "option: --tries           $argc_tries"
+    echo "arg:    source            $argc_source"
+    echo "arg:    target            $argc_target"
 }
 ```
 
 ```
-$ runme cmd -h
-A simple task
+Download a file
 
-USAGE:
-    Runmefile.sh cmd [OPTIONS] [ARG]
+USAGE: Runmefile.sh download [OPTIONS] <SOURCE> [TARGET]
 
 ARGS:
-    <ARG>    A positional argument
+  <SOURCE>  Url to download from
+  [TARGET]  Save file to
 
 OPTIONS:
-    -f, --flag         A flag
-    -h, --help         Print help information
-        --opt <OPT>    A option
-
-$ runme cmd -f --opt=v1 v2
-flag: 1
-opt:  v1
-arg:  v2
-```
-
-*Shell variables are also available.*
-
-```sh
-# @cmd
-build() {
-  echo '$@:' $@
-  echo '$1:' $1
-  echo '$2:' $2
-  echo '$#:' $#
-}
+  -f, --force        Override existing file
+  -t, --tries <NUM>  Set number of retries to NUM
+  -h, --help         Print help information
 ```
 
 ```
-$ runme build foo bar
-$@: foo bar
-$1: foo
-$2: bar
-$#: 2
+$ runme download  -f --tries 3 from.txt to.txt
+cmd:                      download
+flag:   --force           1
+option: --tries           3
+arg:    source            from.txt
+arg:    target            to.txt
 ```
 
-### Task can have aliases
+### Task aliases
 
 ```sh
 # @cmd
@@ -182,9 +188,9 @@ $ runme t
 Test...
 ```
 
-### Task can have pre and post dependencies
+### Task dependencies
 
-Tasks can depend on other tasks. Dependencies are established by calling functions.
+Dependencies are established by function calling.
 
 ```sh
 # @cmd
@@ -210,9 +216,9 @@ bar
 baz
 ```
 
-### Task can be semantically grouped
+### Task group
 
-Tasks can be grouped with `_`, `-`, `@`, `.`, `:`.
+Tasks can be semantically grouped with `_`, `-`, `@`, `.`, `:`.
 
 ```sh
 # @cmd
@@ -226,7 +232,7 @@ app.build() {}
 app.test() {}
 ```
 
-### The default task
+### Default task
 
 When `runme` is invoked without a task name, it runs the `main` function. 
 If the `main` function does not exist, runme will print help information.
@@ -234,31 +240,18 @@ If the `main` function does not exist, runme will print help information.
 ```sh
 main() { 
   foo
-  bar
 }
 
 # @cmd
 foo() {
   echo foo
 }
-
-# @cmd
-bar() {
-  echo baz
-}
 ```
 
 ```
 $ runme
 foo
-bar
 ```
-
-### Informative tasks listings and beautiful help printings
-
-`runme --help`  or `runme --h` will print a help text listing all tasks along with their descriptions and aliases.
-
-`runme <task> --help` or `runme <task> -h` will print a help text containing the description of task's flags, options and positional arguments.
 
 ## Advanced Topics
 
