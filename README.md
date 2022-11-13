@@ -7,26 +7,6 @@ A shell-script driven task runner.
 
 ![demo](https://user-images.githubusercontent.com/4012553/193005194-7eac4e5e-ec35-484f-94da-45805136c943.gif)
 
-- [runme](#runme)
-  - [Install](#install)
-    - [With cargo](#with-cargo)
-    - [Binaries on macOS, Linux, Windows](#binaries-on-macos-linux-windows)
-    - [GitHub Actions](#github-actions)
-  - [Get Started](#get-started)
-  - [Why use runme?](#why-use-runme)
-    - [Cross-platform](#cross-platform)
-    - [Tasks listing](#tasks-listing)
-    - [Task parameters](#task-parameters)
-    - [Task aliases](#task-aliases)
-    - [Task dependencies](#task-dependencies)
-    - [Task group](#task-group)
-    - [Default task](#default-task)
-  - [Advanced Topics](#advanced-topics)
-    - [Completions](#completions)
-    - [Customize shell path](#customize-shell-path)
-    - [Customize script name](#customize-script-name)
-  - [License](#license)
-
 ## Install
 
 ### With cargo
@@ -79,13 +59,13 @@ eval $(runme --runme-eval "$0" "$@")
 Then, try running one of your commands!
 
 ```
-runme build
-runme test
+$ runme build
+Run build
+$ runme test
+Run test
 ```
 
 > Runme uses [`argc`](https://github.com/sigoden/argc) to parse Runmefile.
-
-> `@cmd`, `@alias` are [comment tags](https://github.com/sigoden/argc#comment-tags).
 
 ## Why use runme?
 
@@ -131,7 +111,7 @@ $ runme run foo bar
 bar foo 2
 ```
 
-A more powerful way to define parameters is to use [`@arg`](https://github.com/sigoden/argc#arg), [`@option`](https://github.com/sigoden/argc#option) and [`@flag`](https://github.com/sigoden/argc#flag).
+A more powerful way to define parameters is to use [comment tags](https://github.com/sigoden/argc#comment-tags): [`@arg`](https://github.com/sigoden/argc#arg), [`@option`](https://github.com/sigoden/argc#option) and [`@flag`](https://github.com/sigoden/argc#flag).
 
 ```sh
 # @cmd Download a file
