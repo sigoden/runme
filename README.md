@@ -1,4 +1,4 @@
-# runme
+# Runme
 
 [![CI](https://github.com/sigoden/runme/actions/workflows/ci.yaml/badge.svg)](https://github.com/sigoden/runme/actions/workflows/ci.yaml)
 [![Crates](https://img.shields.io/crates/v/runme.svg)](https://crates.io/crates/runme)
@@ -59,10 +59,17 @@ eval $(runme --runme-eval "$0" "$@")
 Then, try running one of your commands!
 
 ```
-$ runme build
-Run build
+$ runme -h
+USAGE: Runmefile.sh <COMMAND>
+
+COMMANDS:
+  build  build project [aliases: b]
+  test   test project
+
 $ runme test
 Run test
+$ runme b
+Run build
 ```
 
 > Runme uses [`argc`](https://github.com/sigoden/argc) to parse Runmefile.
@@ -94,24 +101,15 @@ COMMANDS:
   test   test project
 ```
 
-`runme <task> --help` or `runme <task> -h` will print a help text containing the description of task's flags, options and positional arguments.
+Run `runme <task> --help` to print help information for a specific task.
 
 ### Task parameters
 
-Parameters can be accessed using shell variables
+Use [comment tags](https://github.com/sigoden/argc#comment-tags) to define task parameters.
 
-```sh
-# @cmd
-run() {
-  echo $2 $1 $#
-}
-```
-```
-$ runme run foo bar
-bar foo 2
-```
-
-A more powerful way to define parameters is to use [comment tags](https://github.com/sigoden/argc#comment-tags): [`@arg`](https://github.com/sigoden/argc#arg), [`@option`](https://github.com/sigoden/argc#option) and [`@flag`](https://github.com/sigoden/argc#flag).
+- [`@arg`](https://github.com/sigoden/argc#arg): define positional argument
+- [`@option`](https://github.com/sigoden/argc#option): define option argument
+- [`@flag`](https://github.com/sigoden/argc#flag): define flag argument
 
 ```sh
 # @cmd Download a file
@@ -130,6 +128,7 @@ download() {
 ```
 
 ```
+$ runme download -h
 Download a file
 
 USAGE: Runmefile.sh download [OPTIONS] <SOURCE> [TARGET]
@@ -151,6 +150,19 @@ flag:   --force           1
 option: --tries           3
 arg:    source            from.txt
 arg:    target            to.txt
+```
+
+You can also use shell variables to access task parameters.
+
+```sh
+# @cmd
+run() {
+  echo $2 $1 $#
+}
+```
+```
+$ runme run foo bar
+bar foo 2
 ```
 
 ### Task aliases
