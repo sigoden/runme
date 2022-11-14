@@ -55,9 +55,6 @@ eval $(runme --runme-eval "$0" "$@")
 
 > To define a new task, simply create the bash function and add the [`@cmd`](https://github.com/sigoden/argc#cmd) above it.  **Task is just function**
 
-
-Then, try running one of your commands!
-
 ```
 $ runme -h
 USAGE: Runmefile.sh <COMMAND>
@@ -80,28 +77,13 @@ Run build
 
 The less work you have to do when performing repetitive tasks like building, testing, linting, etc, the easier your job becomes. After you've configured it through a `Runmefile.sh`, a task runner can do most of that mundane work for you—and your team—with basically zero effort.
 
-### Cross-platform
+### Cross platform
 
 `runme` binary is available in linux, macos, and windows.
 
 `runme` depends on bash which already built into linux/macos. In windows, runme automatically locates and uses bash that comes with **git** by default.
 
 Gnu tools like `ls`, `rm`, `grep`, `sed`, `awk`... also provided with bash, so you can uses them freely and confidently in the Runmefile.
-
-### Tasks listing
-
-Tasks can be listed with `runme --help` or `runme -h`.
-
-```
-$ runme --help
-USAGE: Runmefile.sh <COMMAND>
-
-COMMANDS:
-  build  build project [aliases: b]
-  test   test project
-```
-
-Run `runme <task> --help` to print help information for a specific task.
 
 ### Task parameters
 
