@@ -3,7 +3,7 @@
 [![CI](https://github.com/sigoden/runme/actions/workflows/ci.yaml/badge.svg)](https://github.com/sigoden/runme/actions/workflows/ci.yaml)
 [![Crates](https://img.shields.io/crates/v/runme.svg)](https://crates.io/crates/runme)
 
-A shell-script driven task runner.
+A shell-script based task runner.
 
 ![demo](https://user-images.githubusercontent.com/4012553/193005194-7eac4e5e-ec35-484f-94da-45805136c943.gif)
 
