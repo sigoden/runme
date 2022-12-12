@@ -7,11 +7,11 @@ $_runmeCompletion = {
         return;
     }
     if ($wordToComplete) {
-        $cmds = $commandAst.CommandElements[1..($commandAst.CommandElements.Count - 2)]
+        $words = $commandAst.CommandElements[1..($commandAst.CommandElements.Count - 2)]
     } else {
-        $cmds = $commandAst.CommandElements[1..($commandAst.CommandElements.Count - 1)]
+        $words = $commandAst.CommandElements[1..($commandAst.CommandElements.Count - 1)]
     }
-    (runme --runme-compgen "$runmefile" $cmds 2>$null) -split " " | 
+    (runme --runme-compgen "$runmefile" $words 2>$null) -split " " |
         Where-Object { $_ -like "$wordToComplete*" } |
         ForEach-Object { 
             if ($_.StartsWith("-")) {
