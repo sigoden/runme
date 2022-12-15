@@ -71,11 +71,7 @@ Run build
 
 > Runme uses [`argc`](https://github.com/sigoden/argc) to parse Runmefile.
 
-## Why use runme?
-
-`runme` provides a cross platform way to define and execute custom commands specific to a codebase.
-
-The less work you have to do when performing repetitive tasks like building, testing, linting, etc, the easier your job becomes. After you've configured it through a `Runmefile.sh`, a task runner can do most of that mundane work for you—and your team—with basically zero effort.
+## Features
 
 ### Cross platform
 
