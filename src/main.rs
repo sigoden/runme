@@ -29,7 +29,7 @@ fn main() {
             }
         }
         Err(err) => {
-            eprintln!("{}", err);
+            eprintln!("{err}");
             process::exit(1);
         }
     }
@@ -85,6 +85,10 @@ USAGE:{usage}"#)
                 .long("runme-file").action(ArgAction::SetTrue)
         )
         .arg(
+            Arg::new("runme-shell")
+                .long("runme-shell").action(ArgAction::SetTrue)
+        )
+        .arg(
             Arg::new("runme-version")
                 .long("runme-version")
                 .action(ArgAction::Version)
@@ -101,11 +105,11 @@ USAGE:{usage}"#)
         let cmd_args: Vec<&str> = cmd_args.iter().map(|v| v.as_str()).collect();
         match argc::eval(&source, &cmd_args)? {
             Either::Left(output) => {
-                println!("{}", output)
+                println!("{output}")
             }
             Either::Right(error) => {
                 if env::var_os("NO_COLOR").is_some() {
-                    eprintln!("{}", error);
+                    eprintln!("{error}");
                 } else {
                     eprintln!("{}", error.render().ansi());
                 }
@@ -127,6 +131,9 @@ USAGE:{usage}"#)
         let (_, script_file) =
             get_script_path(true).ok_or_else(|| anyhow!("Not found script file"))?;
         print!("{}", script_file.display());
+    } else if matches.get_flag("runme-shell") {
+        let shell_file = get_shell_path().ok_or_else(|| anyhow!("Not found shell"))?;
+        print!("{}", shell_file.display());
     } else if matches.get_flag("runme-compgen") {
         let (source, cmd_args) = parse_script_args(&script_args)?;
         let cmd_args: Vec<&str> = cmd_args.iter().map(|v| v.as_str()).collect();
@@ -140,7 +147,7 @@ USAGE:{usage}"#)
         let interrupt_me = interrupt.clone();
         ctrlc::set_handler(move || interrupt_me.store(true, Ordering::Relaxed))
             .map_err(|err| anyhow!("Failed to set CTRL-C handler: {}", err))?;
-        let mut command = process::Command::new(&shell);
+        let mut command = process::Command::new(shell);
         command.arg(&script_file);
         command.args(&script_args);
         command.current_dir(script_dir);
@@ -220,7 +227,7 @@ fn candidate_script_names() -> Vec<String> {
     if let Ok(name) = env::var("RUNME_SCRIPT") {
         names.push(name.clone());
         if !name.ends_with(".sh") {
-            names.push(format!("{}.sh", name));
+            names.push(format!("{name}.sh"));
         }
     }
     names.extend(SCRIPT_NAMES.into_iter().map(|v| v.to_string()));
