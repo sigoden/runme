@@ -11,7 +11,14 @@ $_runmeCompletion = {
     } else {
         $words = $commandAst.CommandElements[1..($commandAst.CommandElements.Count - 1)]
     }
-    (runme --runme-compgen "$runmefile" $words 2>$null) -split " " |
+    $comps = (runme --runme-compgen "$runmefile" $words 2>$null)
+    $__argc_compgen_cmd="__argc_compgen_cmd:"
+    if ($comps.StartsWith($__argc_compgen_cmd)) {
+        $comps = $comps.Substring($__argc_compgen_cmd.Length)
+        $comps = (runme $comps 2>$null)
+        $comps = $comps.Trim()
+    }
+    $comps -split " " | 
         Where-Object { $_ -like "$wordToComplete*" } |
         ForEach-Object { 
             if ($_.StartsWith("-")) {

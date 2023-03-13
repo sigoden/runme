@@ -50,7 +50,7 @@ test() {
     echo Run test
 }
 
-eval $(runme --runme-eval "$0" "$@")
+eval "$(runme --runme-eval "$0" "$@")"
 ```
 
 > To define a new task, simply create the bash function and add the [`@cmd`](https://github.com/sigoden/argc#cmd) above it.  **Task is just function**

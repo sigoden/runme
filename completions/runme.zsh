@@ -8,6 +8,9 @@ _runme_completion()
         return 0
     fi
     values=( $(runme --runme-compgen "$runmefile" $words[2,-2] 2>/dev/null) )
+    if [[ "$values" = __argc_compgen_cmd:* ]]; then
+        values=( $(runme ${values#__argc_compgen_cmd:} 2>/dev/null) )
+    fi
     compadd -- $values[@]
     return 0
 }

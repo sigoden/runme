@@ -57,7 +57,7 @@ fn run() -> Result<i32> {
         .author(env!("CARGO_PKG_AUTHORS"))
         .override_usage(
             r#"
-    runme --runme-eval SCRIPT [ARGS...]        Parse arguments `eval $(runme --runme-eval "$0" "$@")`
+    runme --runme-eval SCRIPT [ARGS...]        Parse arguments `eval "$(runme --runme-eval "$0" "$@")"`
     runme --runme-create [TASKS...]            Create a boilerplate runmefile
     runme --runme-help                         Print help information
     runme --runme-version                      Print version information"#,
@@ -200,7 +200,7 @@ fn generate_boilerplate(args: &[String]) -> String {
 
 set -e
 {tasks}
-eval $(runme --runme-eval "$0" "$@")
+eval "$(runme --runme-eval "$0" "$@")"
 "#
     )
 }

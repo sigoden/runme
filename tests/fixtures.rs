@@ -75,7 +75,7 @@ task1() {{
     sleep $1
 }}
 
-eval $(runme --runme-eval "$0" "$@")
+eval "$(runme --runme-eval "$0" "$@")"
 "#
     )
 }

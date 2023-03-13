@@ -9,7 +9,11 @@ _runme_completion() {
         return 0
     fi
     opts=$(runme --runme-compgen "$runmefile" ${COMP_WORDS[@]:1:$((${#COMP_WORDS[@]} - 2))} 2>/dev/null)
-    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    if [[ "$opts" = __argc_compgen_cmd:* ]]; then
+        COMPREPLY=( $(compgen -W "$(runme ${opts#__argc_compgen_cmd:} 2>/dev/null)" -- "${cur}") )
+    else
+        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    fi
     return 0
 }
 
