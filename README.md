@@ -5,7 +5,7 @@
 
 A shell-script based task runner.
 
-![demo](https://user-images.githubusercontent.com/4012553/193005194-7eac4e5e-ec35-484f-94da-45805136c943.gif)
+![demo](https://user-images.githubusercontent.com/4012553/224712229-fdb08a5b-f04a-4b32-85b5-aae020f87096.gif)
 
 ## Install
 
@@ -36,8 +36,6 @@ First, run `runme --runme-create build test` to quickly create boilerplate `Runm
 
 ```sh
 #!/usr/bin/env bash
-
-set -e
 
 # @cmd build project
 # @alias b
