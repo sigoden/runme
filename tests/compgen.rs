@@ -49,6 +49,11 @@ fn test_compgen_positional_arg2() {
 }
 
 #[test]
+fn test_compgen_choice_fn() {
+    snapshot_compgen!(SPEC_SCRIPT, &["prog", "cmd_option_names", "--op10"]);
+}
+
+#[test]
 fn test_compgen_positional_choices() {
     snapshot_compgen!(SPEC_SCRIPT, &["prog", "cmd_positional_with_choices"]);
 }
