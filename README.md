@@ -225,7 +225,7 @@ foo
 
 ### Completions
 
-[Shell completion scripts](completions) are available for bash/zsh/powershell.
+[Shell completion scripts](completions) are available for bash/zsh/fish/powershell.
 
 ### Customize shell path
 
