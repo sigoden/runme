@@ -136,8 +136,13 @@ USAGE:{usage}"#)
         print!("{}", shell_file.display());
     } else if matches.get_flag("runme-compgen") {
         let (source, cmd_args) = parse_script_args(&script_args)?;
-        let cmd_args: Vec<&str> = cmd_args.iter().map(|v| v.as_str()).collect();
-        print!("{}", argc::compgen(&source, &cmd_args)?.join(" "))
+        let line = if cmd_args.len() == 1 {
+            ""
+        } else {
+            cmd_args[1].as_str()
+        };
+        let candicates = argc::compgen(&source, line)?;
+        candicates.into_iter().for_each(|v| println!("{v}"));
     } else {
         let shell = get_shell_path().ok_or_else(|| anyhow!("Not found shell"))?;
         let (script_dir, script_file) = get_script_path(true).ok_or_else(|| {

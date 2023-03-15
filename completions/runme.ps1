@@ -6,19 +6,25 @@ $_runmeCompletion = {
     if (!$runmefile) {
         return;
     }
-    if ($wordToComplete) {
-        $words = $commandAst.CommandElements[1..($commandAst.CommandElements.Count - 2)]
+    if ($wordToComplete.ToString() -eq "") {
+        $tail = " "
     } else {
-        $words = $commandAst.CommandElements[1..($commandAst.CommandElements.Count - 1)]
+        $tail = ""
     }
-    $comps = (runme --runme-compgen "$runmefile" $words 2>$null)
-    $__argc_compgen_cmd="__argc_compgen_cmd:"
-    if ($comps.StartsWith($__argc_compgen_cmd)) {
-        $comps = $comps.Substring($__argc_compgen_cmd.Length)
-        $comps = (runme $comps 2>$null)
-        $comps = $comps.Trim()
+    if ($commandAst.CommandElements.Count -gt 1) {
+        $cmds = ($commandAst.CommandElements[1..($commandAst.CommandElements.Count - 1)] -join " ") + $tail
+    } else {
+        $cmds = $tail
     }
-    $comps -split " " | 
+    $comps = (runme --runme-compgen "$runmefile" "$cmds" 2>$null)
+    if ($comps -match '^`[^` ]+`$') {
+        $comps = (runme $comps.Substring(1, $comps.Length - 2) 2>$null)
+    } elseif ($comps -eq "<FILE>" -or $comps -eq "<PATH>" -or $comps -eq "<FILE>..." -or $comps -eq "<PATH>...") {
+        $comps = ("")
+    } elseif ($comps -eq "<DIR>" -or $comps -eq "<DIR>...") {
+        $comps = ("")
+    }
+    $comps -split "`n" | 
         Where-Object { $_ -like "$wordToComplete*" } |
         ForEach-Object { 
             if ($_.StartsWith("-")) {
@@ -28,6 +34,7 @@ $_runmeCompletion = {
             }
             [System.Management.Automation.CompletionResult]::new($_, $_, $t, '-')
         }
+
 }
 
 Register-ArgumentCompleter -Native -ScriptBlock $_runmeCompletion -CommandName runme
