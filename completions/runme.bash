@@ -5,16 +5,31 @@ _runme_completion() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=()
     runmefile=$(runme --runme-file 2>/dev/null)
-    if [ $? != 0 ]; then
+    if [[ $? != 0 ]]; then
         return 0
     fi
-    opts=$(runme --runme-compgen "$runmefile" ${COMP_WORDS[@]:1:$((${#COMP_WORDS[@]} - 2))} 2>/dev/null)
-    if [[ "$opts" = __argc_compgen_cmd:* ]]; then
-        COMPREPLY=( $(compgen -W "$(runme ${opts#__argc_compgen_cmd:} 2>/dev/null)" -- "${cur}") )
-    else
-        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+    line=${COMP_LINE:${#COMP_WORDS[0]}}
+    IFS=$'\n'
+    opts=($(runme --runme-compgen "$runmefile" "$line" 2>/dev/null))
+    if [[ ${#opts[@]} == 0 ]]; then
+        return 0
+    elif [[ ${#opts[@]} == 1 ]]; then
+        if [[ "$opts" == \`*\` ]]; then
+            opts=($(runme "${opts:1:-1}" 2>/dev/null))
+        elif [[ "$opts" == "<FILE>" ]] || [[ "$opts" == "<PATH>" ]] || [[ "$opts" == "<FILE>..." ]] || [[ "$opts" == "<PATH>..." ]]; then
+            opts=()
+            compopt +o filenames 
+        elif [[ "$opts" == "<DIR>" ]] || [[ "$opts" == "<DIR>..." ]]; then
+            opts=()
+            compopt +o dirnames
+        fi
     fi
-    return 0
+    if [[ ${#opts[@]} -gt 0 ]]; then
+        CANDIDATES=($(compgen -W "${opts[*]}" -- "${cur}"))
+        if [ ${#CANDIDATES[*]} -gt 0 ]; then
+            COMPREPLY=($(printf '%q\n' "${CANDIDATES[@]}"))
+        fi
+    fi
 }
 
 complete -F _runme_completion -o bashdefault -o default runme

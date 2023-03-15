@@ -12,7 +12,7 @@ categories = ["command-line-utilities"]
 keywords = ["command-line", "task-runner", "task-automation", "build-tool"]
 
 [dependencies]
-argc = "0.13"
+argc = "0.14"
 anyhow = "1"
 which = "4.2"
 either = "1.8"
