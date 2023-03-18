@@ -1,7 +1,7 @@
 # Bash completion for runme
 
 _runme_completion() {
-    local runmefile cur opts
+    local argcfile cur opts opts2 line index IFS comp_file comp_dir
     cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=()
     runmefile=$(runme --runme-file 2>/dev/null)
@@ -11,21 +11,26 @@ _runme_completion() {
     line=${COMP_LINE:${#COMP_WORDS[0]}}
     IFS=$'\n'
     opts=($(runme --runme-compgen "$runmefile" "$line" 2>/dev/null))
-    if [[ ${#opts[@]} == 0 ]]; then
-        return 0
-    elif [[ ${#opts[@]} == 1 ]]; then
-        if [[ "$opts" == \`*\` ]]; then
-            opts=($(runme "${opts:1:-1}" 2>/dev/null))
-        elif [[ "$opts" == "<FILE>" ]] || [[ "$opts" == "<PATH>" ]] || [[ "$opts" == "<FILE>..." ]] || [[ "$opts" == "<PATH>..." ]]; then
-            opts=()
-            compopt +o filenames 
-        elif [[ "$opts" == "<DIR>" ]] || [[ "$opts" == "<DIR>..." ]]; then
-            opts=()
-            compopt +o dirnames
+    opts2=()
+    for opt in ${opts[@]}; do
+        if [[ "$opt" == \`*\` ]]; then
+            local choices=($(runme "${opts:1:-1}" 2>/dev/null))
+            opts2=( "${opts2[@]}" "${choices[@]}" )
+        elif [[ "$opt" == "<FILE>" ]] || [[ "$opt" == "<PATH>" ]] || [[ "$opt" == "<FILE>..." ]] || [[ "$opt" == "<PATH>..." ]]; then
+            comp_file=1
+        elif [[ "$opt" == "<DIR>" ]] || [[ "$opt" == "<DIR>..." ]]; then
+            comp_dir=1
+        else
+            opts2+=( "$opt" )
         fi
+    done
+    if [[ "$comp_file" == 1 ]]; then
+        compopt +o filenames 
+    elif [[ "$comp_dir" == 1 ]]; then
+        compopt +o dirnames
     fi
-    if [[ ${#opts[@]} -gt 0 ]]; then
-        CANDIDATES=($(compgen -W "${opts[*]}" -- "${cur}"))
+    if [[ ${#opts2[@]} -gt 0 ]]; then
+        CANDIDATES=($(compgen -W "${opts2[*]}" -- "${cur}"))
         if [ ${#CANDIDATES[*]} -gt 0 ]; then
             COMPREPLY=($(printf '%q\n' "${CANDIDATES[@]}"))
         fi
