@@ -2,9 +2,12 @@
 
 $_runmeCompletion = {
     param($wordToComplete, $commandAst, $cursorPosition)
-    $runmefile = $(runme --runme-file 2>$null)
-    if (!$runmefile) {
-        return;
+    $scriptfile = $(runme --runme-file 2>$null)
+    if (!$scriptfile) {
+        $scriptfile = $commandAst.CommandElements[0]
+        if (-not(Test-Path -Path $scriptfile -PathType Leaf)) {
+            return;
+        }
     }
     if ($wordToComplete.ToString() -eq "") {
         $tail = " "
@@ -16,49 +19,63 @@ $_runmeCompletion = {
     } else {
         $line = $tail
     }
-    $opts = (runme --runme-compgen "$runmefile" "$line" 2>$null).Split("`n")
-    $opts2 = @()
-    foreach ($opt in $opts) {
-        if ($opt -match '^-') {
-            if ($commandAst.CommandElements[$commandAst.CommandElements.Count - 1] -match '^-') {
-                $opts2 += $opt
-            }
-        } elseif ($opt -match '^`[^` ]+`$') {
-            $choices = (runme $opt.Substring(1, $opt.Length - 2) 2>$null).Split("`n")
-            $opts2 += $choices
-        } elseif ($opt -match '^<') {
-            if ($opt -imatch "file|path>(\.\.\.)?") {
-                $comp_file = True
-            } elseif ($opt -imatch "dir>(\.\.\.)?") {
-                $comp_dir = True;
+    $compgen_values = (runme --runme-compgen "$scriptfile" "$line" 2>$null).Split("`n")
+    $candicates = @()
+    $option_values = @()
+    $value_kind = 0
+    foreach ($item in $compgen_values) {
+        if ($item -match '^-') {
+            $option_values += $item
+        } elseif ($item -match '^`[^` ]+`$') {
+            $choices = (runme $item.Substring(1, $item.Length - 2) 2>$null).Split("`n")
+            $candicates += $choices
+        } elseif ($item -match '^<') {
+            if ($item -imatch "<args>...") {
+                $value_kind = 1
+            } elseif ($item -imatch "file|path>(\.\.\.)?") {
+                $value_kind = 2
+            } elseif ($item -imatch "dir>(\.\.\.)?") {
+                $value_kind = 3
             } else {
-                $opts2 += $opt
+                $value_kind = 9
             }
         } else {
-            $opts2 += $opt
+            $candicates += $item
         }
     }
+    $paths = @()
+    if ($value_kind -eq 0) {
+        if ($candicates.Count -eq 0) {
+            $candicates = $option_values
+        }
+    } elseif ($value_kind -eq 1) {
+        if ($candicates.Count -eq 0) {
+            $candicates = $option_values
+        }
+        if ($candicates.Count -eq 0) {
+            $paths = (Get-ChildItem -Path "$wordToComplete*" | Select-Object -ExpandProperty Name)
+        }
+    } elseif ($value_kind -eq 2) {
+        $paths = (Get-ChildItem -Path "$wordToComplete*" | Select-Object -ExpandProperty Name)
+    } elseif ($value_kind -eq 3) {
+        $paths = (Get-ChildItem -Attributes Directory -Path "$wordToComplete*" | Select-Object -ExpandProperty Name)
+    }
 
-    $result = ($opts2 | 
+    $param_value = [System.Management.Automation.CompletionResultType]::ParameterValue
+    $param_name = [System.Management.Automation.CompletionResultType]::ParameterName
+    $result = ($candicates | 
         Where-Object { $_ -like "$wordToComplete*" } |
         ForEach-Object { 
             if ($_.StartsWith("-")) {
-                $t = [System.Management.Automation.CompletionResultType]::ParameterName
+                $t = $param_name
             } else {
-                $t = [System.Management.Automation.CompletionResultType]::ParameterValue
+                $t = $param_value
             }
             [System.Management.Automation.CompletionResult]::new($_, $_, $t, '-')
         })
 
-    $paths = @()
-    if ($comp_file) {
-        $paths = (Get-ChildItem -Path "$wordToComplete*" | Select-Object -ExpandProperty Name)
-    } elseif ($comp_dir) {
-        $paths = (Get-ChildItem -Attributes Directory -Path "$wordToComplete*" | Select-Object -ExpandProperty Name)
-    }
     foreach ($path in $paths) {
-        $t = [System.Management.Automation.CompletionResultType]::ParameterValue
-        $result.Add([System.Management.Automation.CompletionResult]::new($path, $path, $t, '-'))
+        $result.Add([System.Management.Automation.CompletionResult]::new($path, $path, $param_value, '-'))
     }
 
     return $result
