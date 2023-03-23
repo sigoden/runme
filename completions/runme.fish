@@ -6,16 +6,19 @@
 function __fish_complete_runme
     set -l tokens (commandline -c | string trim -l | string split " " --)
     set -l runmefile (runme --runme-file 2>/dev/null)
-    if test -z $runmefile
+    if not test -f $runmefile
         return 0
     end
+    set -l line "$tokens[2..]"
     set -l IFS '\n'
-    set -l opts (runme --runme-compgen "$runmefile" "$tokens[2..]" 2>/dev/null)
+    set -l opts (runme --runme-compgen "$runmefile" "$line" 2>/dev/null)
     set comp_file 0
     set comp_dir 0
     for opt in $opts
-        if string match -q -- '^-' "$opt"
-            echo $opt
+        if string match -qr -- '^-' "$opt"
+            if string match -qr -- '^-' "$tokens[-1]"
+                echo $opt
+            end
         else if string match -qr '^`[^` ]+`' -- "$opt"
             set -l name (string sub "$opt" -s 2 -e -1)
             runme $name 2>/dev/null

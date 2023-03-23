@@ -5,7 +5,7 @@ _runme_completion() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=()
     runmefile=$(runme --runme-file 2>/dev/null)
-    if [[ $? != 0 ]]; then
+    if [[ ! -f "$runmefile" ]]; then
         return 0
     fi
     line=${COMP_LINE:${#COMP_WORDS[0]}}
@@ -14,7 +14,9 @@ _runme_completion() {
     opts2=()
     for opt in ${opts[@]}; do
         if [[ "$opt" == '-'* ]]; then
-            opts2+=( "$opt" )
+            if [[ "$cur" == '-'* ]]; then
+                opts2+=( "$opt" )
+            fi
         elif [[ "$opt" == \`*\` ]]; then
             local choices=($(runme "${opt:1:-1}" 2>/dev/null))
             opts2=( "${opts2[@]}" "${choices[@]}" )

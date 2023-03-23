@@ -5,15 +5,18 @@ _runme_completion()
     local argcfile line opts opts2 comp_file comp_dir
     runmefile=$(runme --runme-file 2>/dev/null)
     line="${words[2,-1]}"
-    if [[ $? -ne 0 ]]; then
+    if [[ ! -f "$runmefile" ]]; then
         return 0
     fi
+    line="${words[2,-1]}"
     IFS=$'\n'
     opts=( $(runme --runme-compgen "$runmefile" "$line" 2>/dev/null) )
     opts2=()
     for opt in ${opts[@]}; do
         if [[ "$opt" == '-'* ]]; then
-            opts2+=( "$opt" )
+            if [[ "$words[-1]" == '-'* ]]; then
+                opts2+=( "$opt" )
+            fi
         elif [[ "$opt" == \`*\` ]]; then
             local choices=( $(runme "${opt:1:-1}" 2>/dev/null) )
             opts2=( "${opts2[@]}" "${choices[@]}" )
