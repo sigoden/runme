@@ -1,5 +1,7 @@
 # Runme
 
+Please note: This repository is currently unmaintained. Use [argc](https://github.com/sigoden/argc) instead.
+
 [![CI](https://github.com/sigoden/runme/actions/workflows/ci.yaml/badge.svg)](https://github.com/sigoden/runme/actions/workflows/ci.yaml)
 [![Crates](https://img.shields.io/crates/v/runme.svg)](https://crates.io/crates/runme)
 
